@@ -953,6 +953,213 @@ func utlsIdToSpec(id ClientHelloID) (ClientHelloSpec, error) {
 				&UtlsGREASEExtension{},
 			}),
 		}, nil
+	// 在utls/u_parrots.go的utlsIdToSpec函数中添加
+	case HelloChrome_136:
+		return ClientHelloSpec{
+			TLSVersMin: VersionTLS12,
+			TLSVersMax: VersionTLS13,
+			CipherSuites: []uint16{
+				GREASE_PLACEHOLDER,
+				TLS_AES_128_GCM_SHA256, // TLS 1.3核心套件
+				TLS_AES_256_GCM_SHA384,
+				TLS_CHACHA20_POLY1305_SHA256,
+				TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+				TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+				TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
+				TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+				TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,
+				TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,
+			},
+			CompressionMethods: []byte{compressionNone},
+			Extensions: []TLSExtension{
+				&UtlsGREASEExtension{},
+				&SNIExtension{},
+				&ExtendedMasterSecretExtension{},
+				&RenegotiationInfoExtension{Renegotiation: RenegotiateOnceAsClient},
+				&SupportedCurvesExtension{[]CurveID{ // 新增X448曲线支持
+					CurveID(GREASE_PLACEHOLDER),
+					X25519,
+					CurveP256,
+					CurveP384,
+					CurveX448,
+				}},
+				&SupportedPointsExtension{SupportedPoints: []byte{pointFormatUncompressed}},
+				&SessionTicketExtension{},
+				&ALPNExtension{AlpnProtocols: []string{"h3", "h2", "http/1.1"}}, // 优先h3
+				&StatusRequestExtension{},
+				&SignatureAlgorithmsExtension{SupportedSignatureAlgorithms: []SignatureScheme{
+					ECDSAWithP256AndSHA256,
+					PSSWithSHA256,
+					PKCS1WithSHA256,
+					ECDSAWithP384AndSHA384,
+					PSSWithSHA384,
+					PKCS1WithSHA384,
+					PSSWithSHA512,
+					PKCS1WithSHA512,
+				}},
+				&SCTExtension{},
+				&KeyShareExtension{[]KeyShare{
+					{Group: CurveID(GREASE_PLACEHOLDER), Data: []byte{0}},
+					{Group: X25519},
+					{Group: CurveP256},
+				}},
+				&PSKKeyExchangeModesExtension{[]uint8{PskModeDHE}},
+				&SupportedVersionsExtension{[]uint16{
+					GREASE_PLACEHOLDER,
+					VersionTLS13,
+					VersionTLS12,
+				}},
+				&UtlsCompressCertExtension{[]CertCompressionAlgo{CertCompressionBrotli}}, // 保留Brotli压缩
+				&ApplicationSettingsExtension{SupportedProtocols: []string{"h3"}},        // 适配HTTP/3
+				&UtlsGREASEExtension{},
+				&UtlsPaddingExtension{GetPaddingLen: BoringPaddingStyle},
+			},
+			GetSessionID: sha256.Sum256,
+		}, nil
+		// 在utls/u_parrots.go的utlsIdToSpec函数中添加
+	case HelloChrome_138:
+		return ClientHelloSpec{
+			TLSVersMin: VersionTLS12,
+			TLSVersMax: VersionTLS13,
+			CipherSuites: []uint16{
+				GREASE_PLACEHOLDER,
+				TLS_AES_128_GCM_SHA256,
+				TLS_AES_256_GCM_SHA384,
+				TLS_CHACHA20_POLY1305_SHA256,
+				TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+				TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+				TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
+				TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+				TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,
+				TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,
+			},
+			CompressionMethods: []byte{compressionNone},
+			Extensions: []TLSExtension{
+				&UtlsGREASEExtension{},
+				&SNIExtension{},
+				&ExtendedMasterSecretExtension{},
+				&RenegotiationInfoExtension{Renegotiation: RenegotiateOnceAsClient},
+				&SupportedCurvesExtension{[]CurveID{
+					CurveID(GREASE_PLACEHOLDER),
+					X25519,
+					CurveP256,
+					CurveP384,
+					CurveX448,
+				}},
+				&SupportedPointsExtension{SupportedPoints: []byte{pointFormatUncompressed}},
+				&SessionTicketExtension{},
+				&ALPNExtension{AlpnProtocols: []string{"h3", "h2", "http/1.1"}},
+				&StatusRequestExtension{},
+				&SignatureAlgorithmsExtension{SupportedSignatureAlgorithms: []SignatureScheme{
+					ECDSAWithP256AndSHA256,
+					PSSWithSHA256,
+					PKCS1WithSHA256,
+					ECDSAWithP384AndSHA384,
+					PSSWithSHA384,
+					PKCS1WithSHA384,
+					PSSWithSHA512,
+					PKCS1WithSHA512,
+				}},
+				&SCTExtension{},
+				&KeyShareExtension{[]KeyShare{
+					{Group: CurveID(GREASE_PLACEHOLDER), Data: []byte{0}},
+					{Group: X25519},
+					{Group: CurveP256},
+					{Group: CurveX448}, // 新增X448密钥共享
+				}},
+				&PSKKeyExchangeModesExtension{[]uint8{PskModeDHE}},
+				&SupportedVersionsExtension{[]uint16{
+					GREASE_PLACEHOLDER,
+					VersionTLS13,
+					VersionTLS12,
+				}},
+				&UtlsCompressCertExtension{[]CertCompressionAlgo{ // 新增Zstd压缩
+					CertCompressionBrotli,
+					CertCompressionZstd,
+				}},
+				&ApplicationSettingsExtension{SupportedProtocols: []string{"h3"}},
+				&UtlsGREASEExtension{},
+				&UtlsPaddingExtension{GetPaddingLen: BoringPaddingStyle},
+			},
+			GetSessionID: sha256.Sum256,
+		}, nil
+	// 新增Chrome139版本的握手信息
+	case HelloChrome_139:
+		return ClientHelloSpec{
+			TLSVersMin: VersionTLS12, // 最低支持TLS 1.2
+			TLSVersMax: VersionTLS13, // 最高支持TLS 1.3
+			CipherSuites: []uint16{ // ok
+				GREASE_PLACEHOLDER,     // GREASE占位符（随机化以避免指纹固定）
+				TLS_AES_128_GCM_SHA256, // TLS 1.3标准套件
+				TLS_AES_256_GCM_SHA384,
+				TLS_CHACHA20_POLY1305_SHA256,
+				TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+				TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+				TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
+				TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+				TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,
+				TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256,
+				TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
+				TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
+				TLS_RSA_WITH_AES_128_GCM_SHA256,
+				TLS_RSA_WITH_AES_256_GCM_SHA384,
+				TLS_RSA_WITH_AES_128_CBC_SHA,
+				TLS_RSA_WITH_AES_256_CBC_SHA,
+			},
+			CompressionMethods: []byte{compressionNone}, // 禁用压缩
+			Extensions: []TLSExtension{
+				&UtlsGREASEExtension{},           // GREASE扩展（随机化）
+				&SNIExtension{},                  // 服务器名称指示
+				&ExtendedMasterSecretExtension{}, // 扩展主密钥
+				&RenegotiationInfoExtension{Renegotiation: RenegotiateOnceAsClient},
+				&SupportedCurvesExtension{[]CurveID{ // 支持的椭圆曲线
+					CurveID(GREASE_PLACEHOLDER), // wireshark抓包得到，不是u_common.go默认的 GREASE_PLACEHOLDER
+					X25519,                      // 优先使用X25519
+					CurveSECP256R1,
+					CurveSECP384R1,
+					CurveX448, // Chrome 139新增对X448的支持
+				}},
+				&SupportedPointsExtension{SupportedPoints: []byte{pointFormatUncompressed}},
+				&SessionTicketExtension{}, // 会话票据
+				&ALPNExtension{AlpnProtocols: []string{ // ALPN协议协商（新增h3支持HTTP/3） ok
+					"h3",
+					"h2",
+					"http/1.1",
+				}},
+				&StatusRequestExtension{}, // OCSP stapling
+				&SignatureAlgorithmsExtension{SupportedSignatureAlgorithms: []SignatureScheme{ // ok
+					ECDSAWithP256AndSHA256,
+					PSSWithSHA256,
+					PKCS1WithSHA256,
+					ECDSAWithP384AndSHA384,
+					PSSWithSHA384,
+					PKCS1WithSHA384,
+					PSSWithSHA512,
+					PKCS1WithSHA512,
+				}},
+				&SCTExtension{}, // 证书透明度
+				&KeyShareExtension{[]KeyShare{ // 密钥共享（TLS 1.3）
+					{Group: CurveID(GREASE_PLACEHOLDER), Data: []byte{0}},
+					{Group: X25519},
+					{Group: CurveP256},
+				}},
+				&PSKKeyExchangeModesExtension{[]uint8{PskModeDHE}}, // PSK模式
+				&SupportedVersionsExtension{[]uint16{ // 支持的TLS版本
+					//0x1a1a,
+					GREASE_PLACEHOLDER,
+					VersionTLS13,
+					VersionTLS12,
+				}},
+				&UtlsCompressCertExtension{[]CertCompressionAlgo{ // 证书压缩
+					CertCompressionBrotli,
+					CertCompressionZstd, // Chrome 139新增Zstd压缩支持
+				}},
+				&ApplicationSettingsExtension{SupportedProtocols: []string{"h3"}}, // 应用层设置
+				&UtlsGREASEExtension{}, // 额外GREASE扩展
+				&UtlsPaddingExtension{GetPaddingLen: BoringPaddingStyle}, // 填充风格
+			},
+			GetSessionID: sha256.Sum256, // 会话ID生成方式
+		}, nil
 	case HelloFirefox_55, HelloFirefox_56:
 		return ClientHelloSpec{
 			TLSVersMax: VersionTLS12,

@@ -644,6 +644,9 @@ var (
 	HelloChrome_131 = ClientHelloID{helloChrome, "131", nil, nil}
 	// Chrome w/ New ALPS codepoint
 	HelloChrome_133 = ClientHelloID{helloChrome, "133", nil, nil}
+	HelloChrome_136 = ClientHelloID{helloChrome, "136", nil, nil}
+	HelloChrome_138 = ClientHelloID{helloChrome, "138", nil, nil}
+	HelloChrome_139 = ClientHelloID{helloChrome, "139", nil, nil}
 
 	HelloIOS_Auto = HelloIOS_14
 	HelloIOS_11_1 = ClientHelloID{helloIOS, "111", nil, nil} // legacy "111" means 11.1
@@ -713,6 +716,7 @@ var DefaultWeights = Weights{
 // based on spec's GreaseStyle, GREASE_PLACEHOLDER may be replaced by another GREASE value
 // https://tools.ietf.org/html/draft-ietf-tls-grease-01
 const GREASE_PLACEHOLDER = 0x0a0a
+const GREASE_PLACEHOLDER_CHROME = 0x2a2a
 
 func isGREASEUint16(v uint16) bool {
 	// First byte is same as second byte

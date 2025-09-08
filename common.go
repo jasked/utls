@@ -150,6 +150,7 @@ const (
 	CurveP256      CurveID = 23
 	CurveP384      CurveID = 24
 	CurveP521      CurveID = 25
+	CurveX448      CurveID = 30
 	X25519         CurveID = 29
 	X25519MLKEM768 CurveID = 4588
 )
